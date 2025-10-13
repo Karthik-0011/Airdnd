@@ -1,0 +1,48 @@
+@{
+    Layout = "_Layout";
+}
+
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container-fluid">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Airdnd</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Residence" asp-action="List">Homes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Experience" asp-action="List">Experiences</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Service" asp-action="List">Services</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Home" asp-action="Index">Admin</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main role="main" class="pb-3">
+    @RenderBody()
+</main>
+
+<footer class="border-top footer text-muted">
+    <div class="container">
+        &copy; @DateTime.Now.Year - Airdnd -
+        <a asp-area="" asp-controller="Home" asp-action="Support">Support</a> -
+        <a asp-area="" asp-controller="Home" asp-action="Cancellation">Cancellation Policy</a> -
+        <a asp-area="" asp-controller="Home" asp-action="Terms">Terms & Condition</a> -
+        <a asp-area="" asp-controller="Home" asp-action="Cookie">Cookie Policies</a>
+    </div>
+</footer>
