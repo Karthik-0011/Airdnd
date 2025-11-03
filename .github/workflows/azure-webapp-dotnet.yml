@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  AZURE_WEBAPP_NAME: airdnd-bkchg5gehscxftg6
+  AZURE_WEBAPP_NAME: Airdnd
   DOTNET_VERSION: '9.0.x'
 
 jobs:
