@@ -1,4 +1,27 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿$(function() {
+    if ($('#daterange').length) {
+        
+        $('#daterange').daterangepicker({
+            autoUpdateInput: false,
+            minDate: moment().startOf('day'), // Block past dates
+            locale: {
+                cancelLabel: 'Clear' 
+            }
+        });
 
-// Write your JavaScript code.
+        $('#daterange').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+        });
+
+        $('#daterange').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('All');
+        });
+
+        var initialDates = $('#daterange').data('initial-dates');
+        if (initialDates && initialDates !== 'All') {
+            $('#daterange').val(initialDates);
+        } else {
+            $('#daterange').val('All');
+        }
+    }
+});

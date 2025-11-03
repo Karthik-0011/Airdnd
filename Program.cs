@@ -1,3 +1,6 @@
+using Airdnd.Models;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
@@ -6,6 +9,12 @@ builder.Services.AddRouting(options =>
 {
     options.LowercaseUrls = true;
 });
+
+builder.Services.AddMemoryCache();
+builder.Services.AddSession();
+
+builder.Services.AddDbContext<AirdndContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("AirdndContext")));
 
 var app = builder.Build();
 
@@ -20,6 +29,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 

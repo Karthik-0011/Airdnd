@@ -1,0 +1,57 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row">
+    <div class="col-md-3">
+        <h3 class="mt-3">Filter</h3>
+        <form asp-action="Index" method="post">
+            <div class="mb-3">
+                <label class="form-label">Where</label>
+                <select asp-for="SelectedLocation" class="form-select">
+                    <option value="all">All</option>
+                    @foreach (Location loc in Model.Locations)
+                    {
+                        <option value="@loc.LocationId">@loc.Name</option>
+                    }
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">When</label>
+
+            <input type="text" name="SelectedDates" value="@Model.SelectedDates" 
+              data-initial-dates="@Model.SelectedDates"
+              class="form-control" id="daterange" placeholder="All" readonly />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Who (Guests)</label>
+                <input type="number" asp-for="SelectedGuests" class="form-control" />
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+
+    <div class="col-md-9">
+        <div class="row">
+            @foreach (Residence res in Model.Residences)
+            {
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <img src="~/images/@res.ResidencePicture" class="card-img-top" alt="@res.Name">
+                        <div class="card-body">
+                            <h5 class="card-title">@res.Name</h5>
+                            <p class="card-text">@res.Location.Name</p>
+                            <a asp-action="Detail" asp-route-id="@res.ResidenceId" class="btn btn-primary">
+                                Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
