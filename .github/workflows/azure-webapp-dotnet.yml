@@ -1,4 +1,4 @@
-name: Build and deploy ASP.NET Core app to Azure Web App
+name: Build and deploy ASP.NET Core app to Azure Web App (OIDC)
 
 on:
   push:
@@ -6,38 +6,36 @@ on:
   workflow_dispatch:
 
 permissions:
+  id-token: write
   contents: read
 
 env:
-  AZURE_WEBAPP_NAME: airdnd-bkchg5gehscxftg6  # Azure App Service name (adjust if different)
+  AZURE_WEBAPP_NAME: airdnd-bkchg5gehscxftg6
   DOTNET_VERSION: '9.0.x'
 
 jobs:
   build-and-deploy:
     runs-on: windows-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Restore
-        run: dotnet restore
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_D0388C94AC46494B9D79755320AD0229 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_407B80212F0144FE84704FDBAB8C9FBA }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_6D6B907ED2194D85A98297AABBE2C0FB }}
 
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
+      - run: dotnet restore
+      - run: dotnet build --configuration Release --no-restore
+      - run: dotnet publish --configuration Release --no-build -o ./publish
 
-      - name: Publish
-        run: dotnet publish --configuration Release --no-build -o ./publish
-
-      # Deploy using publish profile secret stored in the repo (Settings > Secrets and variables > Actions)
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ./publish
