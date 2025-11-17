@@ -1,7 +1,6 @@
-// This is the client-side logic from the Chapter 11 Registration example
 jQuery.validator.addMethod("minimumage",
     function (value, element, param) {
-        if (value === '') return false; // Handled by [Required] but good to have
+        if (value === '') return false;
 
         var dateToCheck = new Date(value);
         if (dateToCheck.toString() === "Invalid Date") return false;

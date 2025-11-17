@@ -37,7 +37,7 @@ namespace Airdnd.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Add(User user)
         {
-            if (!string.IsNullOrEmpty(user.Email))
+            if (TempData["okEmail"] == null && !string.IsNullOrEmpty(user.Email))
             {
                 if (context.Users.Any(u => u.Email == user.Email))
                 {
@@ -79,7 +79,7 @@ namespace Airdnd.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Edit(User user)
         {
-            if (!string.IsNullOrEmpty(user.Email))
+            if (TempData["okEmail"] == null && !string.IsNullOrEmpty(user.Email))
             {
                 if (context.Users.Any(u => u.Email == user.Email && u.UserId != user.UserId))
                 {
@@ -118,7 +118,6 @@ namespace Airdnd.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Delete(User user)
         {
-            // Ensure we remove the tracked entity to avoid accidental detached deletes
             var dbUser = context.Users.Find(user.UserId);
             if (dbUser == null)
             {

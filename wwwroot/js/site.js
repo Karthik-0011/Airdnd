@@ -25,3 +25,9 @@
         }
     }
 });
+
+$(function () {
+    $('select[data-val="true"]').on('change', function () {
+        $(this).valid();
+    });
+});
