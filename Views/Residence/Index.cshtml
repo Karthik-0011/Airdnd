@@ -44,7 +44,7 @@
                         <img src="~/images/@res.ResidencePicture" class="card-img-top" alt="@res.Name">
                         <div class="card-body">
                             <h5 class="card-title">@res.Name</h5>
-                            <p class="card-text">@res.Location.Name</p>
+                            <p class="card-text">@(res.Location?.Name ?? "")</p>
                             <a asp-action="Detail" asp-route-id="@res.ResidenceId" class="btn btn-primary">
                                 Details
                             </a>

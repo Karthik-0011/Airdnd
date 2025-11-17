@@ -1,0 +1,28 @@
+@model Residence
+@{
+    ViewData["Title"] = "Delete Residence";
+}
+
+<h1>Confirm Deletion</h1>
+<h3>Are you sure you want to delete "@Model.Name"?</h3>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Name:</th>
+        <td>@Model.Name</td>
+    </tr>
+    <tr>
+        <th>Location:</th>
+        <td>@(Model.Location?.Name ?? "")</td>
+    </tr>
+    <tr>
+        <th>Owner:</th>
+        <td>@(Model.Owner?.Name ?? "")</td>
+    </tr>
+</table>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="ResidenceId" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

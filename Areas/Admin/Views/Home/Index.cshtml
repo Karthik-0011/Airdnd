@@ -1,8 +1,20 @@
 @{
-    ViewData["Title"] = "Admin Home Page";
+    ViewData["Title"] = "Admin Home";
 }
 
 <div class="text-center">
     <h1 class="display-4">Administrator Portal</h1>
-    <p>Manage Airdnd content and settings from here.</p>
+    <p>Select a category to manage site data.</p>
+</div>
+
+<div class="list-group">
+    <a asp-controller="Location" asp-action="Index" class="list-group-item list-group-item-action">
+        Manage Locations
+    </a>
+    <a asp-controller="Residence" asp-action="Index" class="list-group-item list-group-item-action">
+        Manage Residences
+    </a>
+    <a asp-controller="User" asp-action="Index" class="list-group-item list-group-item-action">
+        Manage Users
+    </a>
 </div>

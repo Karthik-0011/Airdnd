@@ -1,0 +1,14 @@
+@model Location
+@{
+    ViewData["Title"] = "Delete Location";
+}
+
+<h1>Confirm Deletion</h1>
+<h3>Are you sure you want to delete "@Model.Name"?</h3>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="LocationId" />
+
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

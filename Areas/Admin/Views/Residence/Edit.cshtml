@@ -1,0 +1,85 @@
+@model Residence
+@{
+    ViewData["Title"] = (ViewBag.Action == "Add" ? "Add" : "Edit") + " Residence";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="@ViewBag.Action" method="post">
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @if (ViewBag.Action == "Edit")
+    {
+        <input type="hidden" asp-for="ResidenceId" />
+    }
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Name</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="LocationId" class="form-label">Location</label>
+                <select asp-for="LocationId" class="form-select"
+                        asp-items="@(new SelectList(ViewBag.Locations, "LocationId", "Name"))">
+                    <option value="">Select a location</option>
+                </select>
+                <span asp-validation-for="LocationId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="UserId" class="form-label">Owner</label>
+                <select asp-for="UserId" class="form-select"
+                        asp-items="@(new SelectList(ViewBag.Owners, "UserId", "Name"))">
+                    <option value="">Select an owner</option>
+                </select>
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PricePerNight" class="form-label">Price Per Night</label>
+                <input asp-for="PricePerNight" class="form-control" />
+                <span asp-validation-for="PricePerNight" class="text-danger"></span>
+            </div>
+
+             <div class="mb-3">
+                <label asp-for="ResidencePicture" class="form-label">Image Filename</label>
+                <input asp-for="ResidencePicture" class="form-control" />
+                <span asp-validation-for="ResidencePicture" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label asp-for="GuestNumber" class="form-label">Accommodation (Guests)</label>
+                <input asp-for="GuestNumber" class="form-control" />
+                <span asp-validation-for="GuestNumber" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="BedroomNumber" class="form-label">Bedrooms</label>
+                <input asp-for="BedroomNumber" class="form-control" />
+                <span asp-validation-for="BedroomNumber" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="BathroomNumber" class="form-label">Bathrooms</label>
+                <input asp-for="BathroomNumber" class="form-control" />
+                <span asp-validation-for="BathroomNumber" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="BuiltYear" class="form-label">Year Built</label>
+                <input asp-for="BuiltYear" class="form-control" />
+                <span asp-validation-for="BuiltYear" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">@ViewBag.Action</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

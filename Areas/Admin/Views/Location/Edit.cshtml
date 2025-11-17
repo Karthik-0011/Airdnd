@@ -1,0 +1,26 @@
+@model Location
+@{
+    ViewData["Title"] = (ViewBag.Action == "Add" ? "Add" : "Edit") + " Location";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="@ViewBag.Action" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="LocationId" class="form-label">Location ID</label>
+        <input asp-for="LocationId" class="form-control" readonly="@(ViewBag.Action == "Edit")" />
+        <span asp-validation-for="LocationId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Name</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">@ViewBag.Action</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+

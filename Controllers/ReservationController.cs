@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Airdnd.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Airdnd.Controllers
 {
@@ -16,10 +17,12 @@ namespace Airdnd.Controllers
         {
             return new AirdndSession(HttpContext!.Session);
         }
+
         private AirdndCookies GetCookieWriteWrapper()
         {
             return new AirdndCookies(HttpContext!.Response.Cookies);
         }
+
         public IActionResult Index()
         {
             var sessionWrapper = GetSessionWrapper();
@@ -46,28 +49,17 @@ namespace Airdnd.Controllers
                 return RedirectToAction("Index", "Residence");
             }
 
-            DateTime startDate = DateTime.Today;
-            DateTime endDate = DateTime.Today.AddDays(3);
-
+            var dateRange = DateUtility.ParseDateRange(selectedDates);
+            
+            // Server-side validation
             if (!string.IsNullOrEmpty(selectedDates) && selectedDates.ToLower() != "all")
             {
-                var dates = selectedDates.Split(" - ");
-                if (dates.Length == 2)
-                {
-                    DateTime.TryParse(dates[0], out startDate);
-                    DateTime.TryParse(dates[1], out endDate);
-                }
-            }
-
-            // --- Server-side date validation ---
-            if (!string.IsNullOrEmpty(selectedDates) && selectedDates.ToLower() != "all")
-            {
-                if (startDate.Date < DateTime.Today)
+                if (dateRange.StartDate.Date < DateTime.Today)
                 {
                     TempData["message"] = "Please select reservation dates from today or later.";
                     return RedirectToAction("Detail", "Residence", new { id = residenceId });
                 }
-                if (endDate.Date < startDate.Date)
+                if (dateRange.EndDate.Date < dateRange.StartDate.Date)
                 {
                     TempData["message"] = "End date must be the same as or after the start date.";
                     return RedirectToAction("Detail", "Residence", new { id = residenceId });
@@ -77,8 +69,8 @@ namespace Airdnd.Controllers
             var reservation = new Reservation
             {
                 ResidenceId = residenceId,
-                ReservationStartDate = startDate,
-                ReservationEndDate = endDate
+                ReservationStartDate = dateRange.StartDate,
+                ReservationEndDate = dateRange.EndDate
             };
 
             context.Reservations.Add(reservation);
@@ -98,6 +90,7 @@ namespace Airdnd.Controllers
                 SelectedGuests = sessionWrapper.GetGuests()
             }); 
         }
+
 
         [HttpPost]
         public IActionResult Cancel(int id)

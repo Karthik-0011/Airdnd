@@ -1,0 +1,38 @@
+@model List<Residence>
+@{
+    ViewData["Title"] = "Manage Residences";
+}
+
+<h1 class="mb-3">@ViewData["Title"]</h1>
+
+<div class="mb-3">
+    <a asp-action="Add" class="btn btn-primary">Add Residence</a>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Admin Home</a>
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Owner</th>
+            <th>Price/Night</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var res in Model)
+        {
+            <tr>
+                <td>@res.Name</td>
+                <td>@(res.Location?.Name ?? "")</td>
+                <td>@(res.Owner?.Name ?? "")</td>
+                <td>@res.PricePerNight.ToString("c")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@res.ResidenceId" class="btn btn-primary btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@res.ResidenceId" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,38 @@
+@model List<User>
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<h1 class="mb-3">@ViewData["Title"]</h1>
+
+<div class="mb-3">
+    <a asp-action="Add" class="btn btn-primary">Add User</a>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Admin Home</a>
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>User Type</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Name</td>
+                <td>@user.Email</td>
+                <td>@user.PhoneNumber</td>
+                <td>@user.UserType</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-primary btn-sm">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@user.UserId" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

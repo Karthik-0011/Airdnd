@@ -3,6 +3,7 @@ using System;
 using Airdnd.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Airdnd.Migrations
 {
     [DbContext(typeof(AirdndContext))]
-    partial class AirdndContextModelSnapshot : ModelSnapshot
+    [Migration("20251116040349_Phase3_Admin_Validation")]
+    partial class Phase3_Admin_Validation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.10");

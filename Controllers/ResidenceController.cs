@@ -17,11 +17,15 @@ namespace Airdnd.Controllers
         {
             var session = new AirdndSession(HttpContext!.Session);
             var cookies = new AirdndCookies(Request.Cookies);
-            CheckCookieReservations(session, cookies);
+
+            if (session.GetReservationCount() == 0)
+            {
+                LoadReservationsFromCookie(session, cookies);
+            }
 
             bool isRequestFiltered = Request.Method == "POST" ||
-                                     Request.Query.ContainsKey(nameof(model.SelectedLocation)) ||
-                                     RouteData.Values.ContainsKey(nameof(model.SelectedLocation));
+                                         Request.Query.ContainsKey(nameof(model.SelectedLocation)) ||
+                                         RouteData.Values.ContainsKey(nameof(model.SelectedLocation));
 
             if (isRequestFiltered)
             {
@@ -49,30 +53,14 @@ namespace Airdnd.Controllers
 
             if (model.SelectedDates != "All" && !string.IsNullOrEmpty(model.SelectedDates))
             {
-                DateTime reqStart = DateTime.MinValue;
-                DateTime reqEnd = DateTime.MaxValue;
-                bool parseSuccess = false;
+                var dateRange = DateUtility.ParseDateRange(model.SelectedDates);
+                var reservedIds = context.Reservations
+                    .Where(rv => rv.ReservationStartDate <= dateRange.EndDate && 
+                                  rv.ReservationEndDate >= dateRange.StartDate)
+                    .Select(rv => rv.ResidenceId)
+                    .Distinct();
 
-                var dates = model.SelectedDates.Split(" - ");
-                if (dates.Length == 2)
-                {
-                    if (DateTime.TryParse(dates[0], out reqStart) &&
-                        DateTime.TryParse(dates[1], out reqEnd))
-                    {
-                        parseSuccess = true;
-                    }
-                }
-
-                if (parseSuccess)
-                {
-                    var reservedIds = context.Reservations
-                        .Where(rv => rv.ReservationStartDate <= reqEnd && 
-                                      rv.ReservationEndDate >= reqStart)
-                        .Select(rv => rv.ResidenceId)
-                        .Distinct();
-
-                    query = query.Where(r => !reservedIds.Contains(r.ResidenceId));
-                }
+                query = query.Where(r => !reservedIds.Contains(r.ResidenceId));
             }
 
             model.Residences = query.ToList();
@@ -80,6 +68,7 @@ namespace Airdnd.Controllers
 
             return View(model);
         }
+
         public IActionResult Detail(int id)
         {
             var session = new AirdndSession(HttpContext!.Session);
@@ -94,24 +83,21 @@ namespace Airdnd.Controllers
             return View(residence);
         }
 
-        private void CheckCookieReservations(AirdndSession session, AirdndCookies cookies)
+        private void LoadReservationsFromCookie(AirdndSession session, AirdndCookies cookies)
         {
-            if (session.GetReservationCount() == 0)
+            string[] ids = cookies.GetReservationIds();
+            if (ids.Length > 0)
             {
-                string[] ids = cookies.GetReservationIds();
-                if (ids.Length > 0)
-                {
-                    var intIds = new List<int>();
-                    foreach (var id in ids) { if (int.TryParse(id, out int intId)) { intIds.Add(intId); } }
-                    
-                    var reservations = context.Reservations
-                        .Include(r => r.Residence.Location)
-                        .Where(r => intIds.Contains(r.ReservationId))
-                        .OrderBy(r => r.ReservationStartDate)
-                        .ToList();
-                    
-                    session.SetReservations(reservations);
-                }
+                var intIds = new List<int>();
+                foreach (var id in ids) { if (int.TryParse(id, out int intId)) { intIds.Add(intId); } }
+                
+                var reservations = context.Reservations
+                    .Include(r => r.Residence.Location)
+                    .Where(r => intIds.Contains(r.ReservationId))
+                    .OrderBy(r => r.ReservationStartDate)
+                    .ToList();
+                
+                session.SetReservations(reservations);
             }
         }
     }

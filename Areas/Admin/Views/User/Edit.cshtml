@@ -1,0 +1,57 @@
+@model User
+@{
+    ViewData["Title"] = (ViewBag.Action == "Add" ? "Add" : "Edit") + " User";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="@ViewBag.Action" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @if (ViewBag.Action == "Edit")
+    {
+        <input type="hidden" asp-for="UserId" />
+    }
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label">Name</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label">Email</label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+        <input asp-for="PhoneNumber" class="form-control" />
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DOB" class="form-label">Date of Birth</label>
+        <input asp-for="DOB" class="form-control" type="text" placeholder="MM/DD/YYYY" />
+        <span asp-validation-for="DOB" class="text-danger"></span>
+    </div>
+
+     <div class="mb-3">
+        <label asp-for="SSN" class="form-label">SSN (Optional)</label>
+        <input asp-for="SSN" class="form-control" />
+        <span asp-validation-for="SSN" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="UserType" class="form-label">User Type</label>
+        <select asp-for="UserType" class="form-select"
+                asp-items="@(new SelectList(ViewBag.UserTypes))">
+            <option value="">Select a type</option>
+        </select>
+        <span asp-validation-for="UserType" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">@ViewBag.Action</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

@@ -10,26 +10,25 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link text-dark @(controller == "residence" ? "active" : "")" asp-controller="Residence" asp-action="Index">Homes</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark @(controller == "experience" ? "active" : "")" asp-controller="Experience" asp-action="List">Experiences</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark @(controller == "service" ? "active" : "")" asp-controller="Service" asp-action="List">Services</a></li>
-                </ul>
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item me-2">
-                        @{ 
-                            var session = new Airdnd.Models.AirdndSession(Context.Session);
-                            int count = session.GetReservationCount();
-                        }
-                        <a class="nav-link text-dark @(controller == "reservation" ? "active" : "")" asp-controller="Reservation" asp-action="Index">
-                            <i class="fas fa-calendar-check"></i>
-                            <span class="badge bg-primary">@count</span>
-                        </a>
-                    </li>
-                    <li class="nav-item"><a class="nav-link text-dark" asp-area="Admin" asp-controller="Home" asp-action="Index">Admin</a></li>
-                </ul>
-            </div>
+        <div class="navbar-collapse collapse d-sm-inline-flex">
+            <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link text-dark @(controller == "residence" ? "active" : "")" asp-controller="Residence" asp-action="Index">Homes</a></li>
+            <li class="nav-item"><a class="nav-link text-dark @(controller == "experience" ? "active" : "")" asp-controller="Experience" asp-action="List">Experiences</a></li>
+            <li class="nav-item"><a class="nav-link text-dark @(controller == "service" ? "active" : "")" asp-controller="Service" asp-action="List">Services</a></li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item me-2">
+                    @{ 
+                        var session = new Airdnd.Models.AirdndSession(Context.Session);
+                        int count = session.GetReservationCount();
+                    }
+                    <a class="nav-link text-dark @(controller == "reservation" ? "active" : "")" asp-controller="Reservation" asp-action="Index">
+                        <i class="fas fa-calendar-check"></i>
+                        <span class="badge bg-primary">@count</span>
+                    </a>
+                </li>
+                <li class="nav-item"><a class="nav-link text-dark" asp-area="Admin" asp-controller="Home" asp-action="Index">Admin</a></li>
+            </ul>
         </div>
     </nav>
 </header>
