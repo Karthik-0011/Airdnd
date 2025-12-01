@@ -1,5 +1,7 @@
 using Airdnd.Models;
 using Microsoft.EntityFrameworkCore;
+using Airdnd.Models.DataLayer;
+using Airdnd.Models.DataLayer.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,8 @@ builder.Services.AddSession();
 
 builder.Services.AddDbContext<AirdndContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("AirdndContext")));
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 var app = builder.Build();
 

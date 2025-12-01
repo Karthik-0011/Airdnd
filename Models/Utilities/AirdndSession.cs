@@ -1,4 +1,7 @@
-namespace Airdnd.Models
+using Airdnd.Models.ExtensionMethods;
+using Airdnd.Models.DomainModels;
+
+namespace Airdnd.Models.Utilities
 {
     public class AirdndSession
     {

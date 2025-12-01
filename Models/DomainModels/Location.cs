@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Airdnd.Models
+namespace Airdnd.Models.DomainModels
 {
     public class Location
     {

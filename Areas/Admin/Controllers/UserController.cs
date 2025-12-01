@@ -1,22 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
-using Airdnd.Models;
-using Microsoft.EntityFrameworkCore;
+using Airdnd.Models.DomainModels;           
+using Airdnd.Models.DataLayer.Repositories;  
 
 namespace Airdnd.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class UserController : Controller
     {
-        private AirdndContext context;
+        private IRepository<User> data { get; set; }
 
-        public UserController(AirdndContext ctx)
+        public UserController(IRepository<User> rep)
         {
-            context = ctx;
+            data = rep;
         }
 
         public IActionResult Index()
         {
-            var users = context.Users.OrderBy(u => u.Name).ToList();
+            var users = data.List(new QueryOptions<User> { OrderBy = u => u.Name });
             return View(users);
         }
 
@@ -39,7 +39,12 @@ namespace Airdnd.Areas.Admin.Controllers
         {
             if (TempData["okEmail"] == null && !string.IsNullOrEmpty(user.Email))
             {
-                if (context.Users.Any(u => u.Email == user.Email))
+                // Check email uniqueness using Repository
+                var existingUser = data.List(new QueryOptions<User> { 
+                    Where = u => u.Email == user.Email 
+                }).FirstOrDefault();
+
+                if (existingUser != null)
                 {
                     ModelState.AddModelError("Email", $"Email '{user.Email}' is already in use.");
                 }
@@ -47,8 +52,8 @@ namespace Airdnd.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                context.Users.Add(user);
-                context.SaveChanges();
+                data.Insert(user);
+                data.Save();
                 TempData["message"] = $"{user.Name} was added.";
                 return RedirectToAction("Index");
             }
@@ -67,12 +72,8 @@ namespace Airdnd.Areas.Admin.Controllers
         {
             ViewBag.Action = "Edit";
             LoadViewBagData();
-
-            var user = context.Users.Find(id);
-            if (user == null)
-            {
-                return RedirectToAction("Index");
-            }
+            var user = data.Get(id);
+            if (user == null) return RedirectToAction("Index");
             return View(user);
         }
 
@@ -81,7 +82,11 @@ namespace Airdnd.Areas.Admin.Controllers
         {
             if (TempData["okEmail"] == null && !string.IsNullOrEmpty(user.Email))
             {
-                if (context.Users.Any(u => u.Email == user.Email && u.UserId != user.UserId))
+                var existingUser = data.List(new QueryOptions<User> { 
+                    Where = u => u.Email == user.Email && u.UserId != user.UserId 
+                }).FirstOrDefault();
+
+                if (existingUser != null)
                 {
                     ModelState.AddModelError("Email", $"Email '{user.Email}' is already in use by another user.");
                 }
@@ -89,8 +94,8 @@ namespace Airdnd.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                context.Users.Update(user);
-                context.SaveChanges();
+                data.Update(user);
+                data.Save();
                 TempData["message"] = $"{user.Name} was updated.";
                 return RedirectToAction("Index");
             }
@@ -107,24 +112,19 @@ namespace Airdnd.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var user = context.Users.Find(id);
-            if (user == null)
-            {
-                return RedirectToAction("Index");
-            }
+            var user = data.Get(id);
+            if (user == null) return RedirectToAction("Index");
             return View(user);
         }
 
         [HttpPost]
         public IActionResult Delete(User user)
         {
-            var dbUser = context.Users.Find(user.UserId);
-            if (dbUser == null)
-            {
-                return RedirectToAction("Index");
-            }
-            context.Users.Remove(dbUser);
-            context.SaveChanges();
+            var dbUser = data.Get(user.UserId);
+            if (dbUser == null) return RedirectToAction("Index");
+            
+            data.Delete(dbUser);
+            data.Save();
             TempData["message"] = $"{(dbUser.Name ?? user.Name ?? string.Empty)} was deleted.";
             return RedirectToAction("Index");
         }

@@ -1,22 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
-using Airdnd.Models;
-using Microsoft.EntityFrameworkCore;
+using Airdnd.Models.DomainModels;            
+using Airdnd.Models.DataLayer.Repositories;  
 
 namespace Airdnd.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class LocationController : Controller
     {
-        private AirdndContext context;
+        // Using IRepository instead of Context
+        private IRepository<Location> data { get; set; }
 
-        public LocationController(AirdndContext ctx)
+        public LocationController(IRepository<Location> rep)
         {
-            context = ctx;
+            data = rep;
         }
 
         public IActionResult Index()
         {
-            var locations = context.Locations.OrderBy(l => l.Name).ToList();
+            // Using QueryOptions for sorting
+            var options = new QueryOptions<Location> { OrderBy = l => l.Name };
+            var locations = data.List(options);
             return View(locations);
         }
 
@@ -31,16 +34,28 @@ namespace Airdnd.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Add(Location location)
         {
+            if (!string.IsNullOrEmpty(location.LocationId))
+            {
+                location.LocationId = location.LocationId.ToLower();
+            }
+
+            // Using Repository Get()
+            var existing = data.Get(location.LocationId);
+            if (existing != null)
+            {
+                ModelState.AddModelError(nameof(Location.LocationId), "This Location ID already exists.");
+            }
+
             if (ModelState.IsValid)
             {
-                context.Locations.Add(location);
-                context.SaveChanges();
+                // Using Repository Insert and Save
+                data.Insert(location);
+                data.Save();
                 TempData["message"] = $"{location.Name} was added.";
                 return RedirectToAction("Index");
             }
             else
             {
-                // Add model-level error
                 ModelState.AddModelError("", "Please fix the error(s) below.");
                 ViewBag.Action = "Add";
                 return View("Edit", location); 
@@ -52,11 +67,8 @@ namespace Airdnd.Areas.Admin.Controllers
         public IActionResult Edit(string id)
         {
             ViewBag.Action = "Edit";
-            var location = context.Locations.Find(id);
-            if (location == null)
-            {
-                return RedirectToAction("Index");
-            }
+            var location = data.Get(id); // Using Repository Get
+            if (location == null) return RedirectToAction("Index");
             return View(location);
         }
 
@@ -65,14 +77,13 @@ namespace Airdnd.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                context.Locations.Update(location);
-                context.SaveChanges();
+                data.Update(location); // Using Repository Update
+                data.Save();
                 TempData["message"] = $"{location.Name} was updated.";
                 return RedirectToAction("Index");
             }
             else
             {
-                // Add model-level error
                 ModelState.AddModelError("", "Please fix the error(s) below.");
                 ViewBag.Action = "Edit";
                 return View(location);
@@ -83,19 +94,16 @@ namespace Airdnd.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Delete(string id)
         {
-            var location = context.Locations.Find(id);
-            if (location == null)
-            {
-                return RedirectToAction("Index");
-            }
+            var location = data.Get(id);
+            if (location == null) return RedirectToAction("Index");
             return View(location);
         }
 
         [HttpPost]
         public IActionResult Delete(Location location)
         {
-            context.Locations.Remove(location);
-            context.SaveChanges();
+            data.Delete(location); // Using Repository Delete
+            data.Save();
             TempData["message"] = $"{location.Name} was deleted.";
             return RedirectToAction("Index");
         }

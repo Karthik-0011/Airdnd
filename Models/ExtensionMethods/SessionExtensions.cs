@@ -1,5 +1,5 @@
 using System.Text.Json;
-namespace Airdnd.Models
+namespace Airdnd.Models.ExtensionMethods
 {
     public static class SessionExtensions
     {

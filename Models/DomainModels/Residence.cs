@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using Airdnd.Models.Validation;
 
-namespace Airdnd.Models
+namespace Airdnd.Models.DomainModels
 {
     public class Residence
     {

@@ -19,7 +19,7 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item me-2">
                     @{ 
-                        var session = new Airdnd.Models.AirdndSession(Context.Session);
+                        var session = new Airdnd.Models.Utilities.AirdndSession(Context.Session);
                         int count = session.GetReservationCount();
                     }
                     <a class="nav-link text-dark @(controller == "reservation" ? "active" : "")" asp-controller="Reservation" asp-action="Index">

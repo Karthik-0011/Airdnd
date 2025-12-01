@@ -1,4 +1,4 @@
-namespace Airdnd.Models;
+namespace Airdnd.Models.ViewModels;
 
 public class ErrorViewModel
 {

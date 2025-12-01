@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 
-namespace Airdnd.Models
+namespace Airdnd.Models.Validation
 {
     public class BathroomAttribute : ValidationAttribute, IClientModelValidator
     {

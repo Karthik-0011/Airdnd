@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Airdnd.Models.Validation;
 using System;
 
-namespace Airdnd.Models
+namespace Airdnd.Models.DomainModels
 {
     public class User : IValidatableObject
     {

@@ -1,41 +1,43 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Airdnd.Models;
-using Microsoft.EntityFrameworkCore;
+using Airdnd.Models.DomainModels;          
+using Airdnd.Models.DataLayer.Repositories; 
 
 namespace Airdnd.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class ResidenceController : Controller
     {
-        private AirdndContext context;
+        private IRepository<Residence> data { get; set; }
+        private IRepository<Location> locationData { get; set; }
+        private IRepository<User> userData { get; set; }
 
-        public ResidenceController(AirdndContext ctx)
+        public ResidenceController(IRepository<Residence> rep, IRepository<Location> locRep, IRepository<User> userRep)
         {
-            context = ctx;
+            data = rep;
+            locationData = locRep;
+            userData = userRep;
         }
 
         public IActionResult Index()
         {
-            var residences = context.Residences
-                .Include(r => r.Location)
-                .Include(r => r.Owner)
-                .OrderBy(r => r.Name)
-                .ToList();
-                
+            var options = new QueryOptions<Residence>
+            {
+                Includes = "Location, Owner",
+                OrderBy = r => r.Name
+            };
+            var residences = data.List(options);
             return View(residences);
         }
 
         private void LoadDropdownData()
         {
-            ViewBag.Locations = context.Locations
-                .OrderBy(l => l.Name)
-                .ToList();
+            ViewBag.Locations = locationData.List(new QueryOptions<Location> { OrderBy = l => l.Name });
             
-            ViewBag.Owners = context.Users
-                .Where(u => u.UserType == "Owner")
-                .OrderBy(u => u.Name)
-                .ToList();
+            ViewBag.Owners = userData.List(new QueryOptions<User> { 
+                Where = u => u.UserType == "Owner", 
+                OrderBy = u => u.Name 
+            });
         }
 
         // --- Add ---
@@ -50,16 +52,25 @@ namespace Airdnd.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Add(Residence residence)
         {
+            // Check Owner using Repository
+            if (TempData["okOwner"] == null)
+            {
+                var owner = userData.Get(residence.UserId);
+                if (owner == null || owner.UserType != "Owner")
+                {
+                    ModelState.AddModelError("UserId", "Selected user is not a valid Owner.");
+                }
+            }
+
             if (ModelState.IsValid)
             {
-                context.Residences.Add(residence);
-                context.SaveChanges();
+                data.Insert(residence);
+                data.Save();
                 TempData["message"] = $"{residence.Name} was added.";
                 return RedirectToAction("Index");
             }
             else
             {
-                // Add model-level error
                 ModelState.AddModelError("", "Please fix the error(s) below.");
                 ViewBag.Action = "Add";
                 LoadDropdownData(); 
@@ -73,28 +84,32 @@ namespace Airdnd.Areas.Admin.Controllers
         {
             ViewBag.Action = "Edit";
             LoadDropdownData(); 
-
-            var residence = context.Residences.Find(id);
-            if (residence == null)
-            {
-                return RedirectToAction("Index");
-            }
+            var residence = data.Get(id);
+            if (residence == null) return RedirectToAction("Index");
             return View(residence);
         }
 
         [HttpPost]
         public IActionResult Edit(Residence residence)
         {
+            if (TempData["okOwner"] == null)
+            {
+                var owner = userData.Get(residence.UserId);
+                if (owner == null || owner.UserType != "Owner")
+                {
+                    ModelState.AddModelError("UserId", "Selected user is not a valid Owner.");
+                }
+            }
+
             if (ModelState.IsValid)
             {
-                context.Residences.Update(residence);
-                context.SaveChanges();
+                data.Update(residence);
+                data.Save();
                 TempData["message"] = $"{residence.Name} was updated.";
                 return RedirectToAction("Index");
             }
             else
             {
-                // Add model-level error
                 ModelState.AddModelError("", "Please fix the error(s) below.");
                 ViewBag.Action = "Edit";
                 LoadDropdownData(); 
@@ -106,23 +121,22 @@ namespace Airdnd.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var residence = context.Residences
-                .Include(r => r.Location)
-                .Include(r => r.Owner)
-                .FirstOrDefault(r => r.ResidenceId == id);
-            
-            if (residence == null)
+            var options = new QueryOptions<Residence>
             {
-                return RedirectToAction("Index");
-            }
+                Where = r => r.ResidenceId == id,
+                Includes = "Location, Owner"
+            };
+            var residence = data.List(options).FirstOrDefault();
+            
+            if (residence == null) return RedirectToAction("Index");
             return View(residence);
         }
 
         [HttpPost]
         public IActionResult Delete(Residence residence)
         {
-            context.Residences.Remove(residence);
-            context.SaveChanges();
+            data.Delete(residence);
+            data.Save();
             TempData["message"] = $"{residence.Name} was deleted.";
             return RedirectToAction("Index");
         }

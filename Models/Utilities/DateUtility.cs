@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Airdnd.Models
+namespace Airdnd.Models.Utilities
 {
     public static class DateUtility
     {
